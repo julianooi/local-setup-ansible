@@ -1,0 +1,43 @@
+- name: install ssh keys
+  hosts: localhost
+  connection: local
+  vars_files:
+    - ssh/keys.yaml
+  vars:
+    src_priv_key: ssh/id_rsa
+    src_pub_key: ssh/id_rsa.pub
+    dest_priv_key: ~/.ssh/id_rsa
+    dest_pub_key: ~/.ssh/id_rsa.pub
+  tasks:
+    - name: Ensure .ssh directory exists.
+      ansible.builtin.file:
+        dest: "{{ dest_key | dirname }}"
+        mode: 0700
+        state: directory
+    - name: Install private ssh key
+      ansible.builtin.copy:
+        src: "{{ src_priv_key }}"
+        dest: "{{ dest_priv_key }}"
+        mode: 0600
+    - name: Install public ssh key
+      ansible.builtin.copy:
+        src: "{{ src_pub_key }}"
+        dest: "{{ dest_pub_key }}"
+        mode: 0600
+
+- name: setup dev environment
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: install zsh
+      community.general.pacman:
+        name:
+          - zsh
+          - curl
+          - podman
+          - neovim
+          - git
+          - go
+
+    - name: install oh-my-zsh
+      ansible.builtin.shell: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
