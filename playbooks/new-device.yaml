@@ -4,16 +4,16 @@
   vars_files:
     - ssh/keys.yaml
   vars:
-    src_priv_key: ssh/id_rsa
-    src_pub_key: ssh/id_rsa.pub
-    src_config: ssh/config
+    src_priv_key: ../ssh/id_rsa
+    src_pub_key: ../ssh/id_rsa.pub
+    src_config: ../ssh/config
     dest_priv_key: ~/.ssh/id_rsa
     dest_pub_key: ~/.ssh/id_rsa.pub
     dest_config: ~/.ssh/config
   tasks:
     - name: Ensure .ssh directory exists.
       ansible.builtin.file:
-        dest: "{{ dest_key | dirname }}"
+        dest: "{{ dest_priv_key | dirname }}"
         mode: 0700
         state: directory
     - name: Install private ssh key
@@ -36,7 +36,8 @@
   hosts: localhost
   connection: local
   tasks:
-    - name: install zsh
+    - name: install required softwares
+      become: true
       community.general.pacman:
         name:
           - zsh
@@ -45,6 +46,17 @@
           - neovim
           - git
           - go
+          - yadm
 
     - name: install oh-my-zsh
       ansible.builtin.shell: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+      ignore_errors: true
+    - name: get config files
+      ansible.builtin.shell: yadm clone git@github.com:julianooi/dotfiles.git
+      ignore_errors: true
+    - name: clone tpm (tmux)
+      ansible.builtin.git:
+        depth: 1
+        dest: ~/.tmux/plugins/tpm
+        repo: https://github.com/tmux-plugins/tpm
+
