@@ -6,8 +6,10 @@
   vars:
     src_priv_key: ssh/id_rsa
     src_pub_key: ssh/id_rsa.pub
+    src_config: ssh/config
     dest_priv_key: ~/.ssh/id_rsa
     dest_pub_key: ~/.ssh/id_rsa.pub
+    dest_config: ~/.ssh/config
   tasks:
     - name: Ensure .ssh directory exists.
       ansible.builtin.file:
@@ -23,6 +25,11 @@
       ansible.builtin.copy:
         src: "{{ src_pub_key }}"
         dest: "{{ dest_pub_key }}"
+        mode: 0600
+    - name: Install ssh config file
+      ansible.builtin.copy:
+        src: "{{ src_config }}"
+        dest: "{{ dest_config }}"
         mode: 0600
 
 - name: setup dev environment
