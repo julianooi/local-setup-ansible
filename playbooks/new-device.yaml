@@ -59,4 +59,7 @@
         depth: 1
         dest: ~/.tmux/plugins/tpm
         repo: https://github.com/tmux-plugins/tpm
+    - name: install tpm with plugins
+      ansible.builtin.shell: ~/.tmux/plugins/tpm/bin/install_plugins
+      ignore_errors: true
 
